@@ -12,7 +12,8 @@ public abstract class BufferManager {
     abstract public Buffer getBuffer();
     abstract public void writeToBuffer(Sensor sensor, Location location);
     abstract public ArrayList<Entry> getDataByTime(int t1, int t2 );
-    abstract public ArrayList<Entry> getDataByLocation(Location l , float radius);
+	abstract public ArrayList<Entry> getDataByLocation(Location l , float radius);
+	abstract public ArrayList<Entry> getAllEntries();
 }
 class NoSQLBufferManager extends BufferManager
 {
@@ -41,6 +42,11 @@ class NoSQLBufferManager extends BufferManager
 		return null;
 	}
     //extend
+
+	@Override
+	public ArrayList<Entry> getAllEntries() {
+		return null;
+	}
 }
 
 class SQLBufferManager extends BufferManager
@@ -70,6 +76,11 @@ class SQLBufferManager extends BufferManager
 		return null;
 	}
     //extend
+
+	@Override
+	public ArrayList<Entry> getAllEntries() {
+		return null;
+	}
 }
 
 class BasicBufferManager extends BufferManager
@@ -77,6 +88,10 @@ class BasicBufferManager extends BufferManager
 	public BasicBufferManager() {
 		super();
 	}
+	@Override
+    public ArrayList<Entry> getAllEntries(){
+        return this.buffer.entries;
+    }
     @Override
     public Buffer getBuffer(){
         return this.buffer;

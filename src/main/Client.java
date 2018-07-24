@@ -8,14 +8,14 @@ public class Client {
         LocationManager locationManager = new LocationManager();
         Exporter exporter = new ConsoleExporter();
         BufferManager bufferManager = new BasicBufferManager();
-
-        Sensor tempSensor = new TemperatureSensor(sensorManager.getNextId());
+        SensorFactory sensorFactory = new SensorFactory();
+        Sensor tempSensor = sensorFactory.getSensor(sensorManager.getNextId(), "TEMPERATURE");
         locationManager.setLocation(tempSensor.id, new Location(100,200));
         
-        Sensor phSensor = new PHSensor(sensorManager.getNextId());
+        Sensor phSensor = sensorFactory.getSensor(sensorManager.getNextId(), "PH");
         locationManager.setLocation(phSensor.id, new Location(100,200));
 
-        Sensor oxygenSensor = new OxygenSensor(sensorManager.getNextId());
+        Sensor oxygenSensor = sensorFactory.getSensor(sensorManager.getNextId(), "OXYGEN");
         locationManager.setLocation(oxygenSensor.id, new Location(100,200));
 
         sensorManager.addSensor(tempSensor);
@@ -24,10 +24,11 @@ public class Client {
         
         
         
-      
         for(Sensor sensor: sensorManager.getSensors()) {
-        	bufferManager.writeToBuffer(sensor, locationManager.getLocation(sensor.id));
+            bufferManager.writeToBuffer(sensor, locationManager.getLocation(sensor.id));
         }
-        exporter.export(bufferManager.getBuffer().entries);
+        exporter.export(bufferManager.getAllEntries());
+
 	}
+
 }
