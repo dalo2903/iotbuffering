@@ -1,0 +1,25 @@
+context Buffer::entries: ArrayList<Entry> 
+	init: new ArrayList<Entry>()
+
+context Buffer::addEntry(Entry e)
+	pre: e <> null
+	post: self.entries->size() = self@pre.entries->size() + 1
+
+context BufferManager::buffer: Buffer
+	init: new Buffer()
+	
+context BufferManager::dataReader: SensorDataReader
+	init: new SensorDataReader()
+
+context BufferManager::writeToBuffer(Entry entry)
+	pre: entry <> null
+	post: self.buffer.entries->size() == self@pre.buffer.entries->size() + 1
+	
+context BufferManager::getDataByTime(int t1, int t2 )
+	pre: t1 <= t2 and t1 <= now
+	post: ressult = buffer.entries->select(e: Entry | e.time >= t1 and e.time < t2)
+	
+context BufferManager::getDataByLocation(Location l , float radius)
+	pre:
+	post: result = buffer.entries->select(e: Entry | e.location == l)
+	
