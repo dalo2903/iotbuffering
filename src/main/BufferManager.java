@@ -11,7 +11,7 @@ public abstract class BufferManager {
     }
     abstract public Buffer getBuffer();
     abstract public void writeToBuffer(Sensor sensor, Location location);
-    abstract public ArrayList<Entry> getDataByTime(int t1, int t2 );
+    abstract public ArrayList<Entry> getDataByTime(long t1, long t2 );
 	abstract public ArrayList<Entry> getDataByLocation(Location l , float radius);
 	abstract public ArrayList<Entry> getAllEntries();
 }
@@ -31,7 +31,7 @@ class NoSQLBufferManager extends BufferManager
 	}
 
 	@Override
-	public ArrayList<Entry> getDataByTime(int t1, int t2) {
+	public ArrayList<Entry> getDataByTime(long t1, long t2) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -65,7 +65,7 @@ class SQLBufferManager extends BufferManager
 	}
 
 	@Override
-	public ArrayList<Entry> getDataByTime(int t1, int t2) {
+	public ArrayList<Entry> getDataByTime(long t1, long t2) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -103,10 +103,14 @@ class BasicBufferManager extends BufferManager
         
     }
 	@Override
-	public ArrayList<Entry> getDataByTime(int t1, int t2) {
+	public ArrayList<Entry> getDataByTime(long t1, long t2) {
 		ArrayList<Entry> result = new ArrayList<Entry>();
-		
-		return null;
+		for(Entry e: buffer.entries) {
+			if(e.time >= t1 && e.time <= t2) {
+				result.add(e);
+			}
+		}
+		return result;
 	}
 	@Override
 	public ArrayList<Entry> getDataByLocation(Location l, float radius) {

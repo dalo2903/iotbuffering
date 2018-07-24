@@ -1,25 +1,67 @@
+// Buffer
 context Buffer::entries: ArrayList<Entry> 
 	init: new ArrayList<Entry>()
 
-context Buffer::addEntry(Entry e)
-	pre: e <> null
-	post: self.entries->size() = self@pre.entries->size() + 1
+context Buffer inv BufferStructure: self.entries = Bag(Entry)
 
+context Buffer::addEntry(e: Entry)
+	pre: self.entries->size() < self.maxsize and e <> null
+	post: self.entries->union(Bag(e))
+
+context Buffer::clear()
+	post: self.entries->exclude(self.entries)
+
+// Buffer Manager
 context BufferManager::buffer: Buffer
 	init: new Buffer()
-	
+
 context BufferManager::dataReader: SensorDataReader
 	init: new SensorDataReader()
 
-context BufferManager::writeToBuffer(Entry entry)
-	pre: entry <> null
-	post: self.buffer.entries->size() == self@pre.buffer.entries->size() + 1
+context BufferManager::writeToBuffer(entry: Entry)
+	pre: self.buffer.entries->size() < self.buffer.maxsize and e <> null
+	post: self.buffer->union(Bag(entry))
 	
-context BufferManager::getDataByTime(int t1, int t2 )
+context BufferManager::getDataByTime(t1: Integer, t2: Integer)
 	pre: t1 <= t2 and t1 <= now
-	post: ressult = buffer.entries->select(e: Entry | e.time >= t1 and e.time < t2)
+	post: ressult = self.buffer.entries->forAll(e: Entry | e.time >= t1 and e.time < t2)
 	
-context BufferManager::getDataByLocation(Location l , float radius)
-	pre:
-	post: result = buffer.entries->select(e: Entry | e.location == l)
-	
+context BufferManager::getDataByLocation(location: Location, radius: Float )
+	pre: radius > 0 and location.longtitude > 0 location.latitude > 0
+	post: result = self.buffer.entries->forAll(e: Entry | e.location = location)
+
+context BufferManager::getAllEntries()
+	post: result = self.buffer.entries
+
+context BufferManager::clearBuffer()
+	post: self.buffer.entries->exclude(self.buffer.entries)
+
+// Sensor Manager
+context SensorManager inv SensorsStructure: self.sensors = Set(Sensor)
+
+context SensorManager::addSensor(s: Sensor)
+	pre: self.sensors->includes(s) = false and s <> null
+	post: self.sensors->union(Set(s))
+
+context SensorManager::getSensor(id: Integer)
+	post: result = self.sensors->forAll(sensor: Sensor | sensor.id = id)
+
+// Location Manager
+context LocationManager inv LocationsStructure: self.locations = Set(Tuple(sensorId: Integer, location: Location))
+
+context LocationManager::setLocation(id: Integer, location: Location)
+	pre: self.locations->includes(id) = false
+	post: self.locations->union(Set{Tuple{id, location}})
+
+context LocationManager::getLocation(id: Integer)
+	post: result = self.locations->forAll(location: Location | self.locations->includes(id))
+
+// Sensor
+context TemperatureSensor::getData()
+	post: result <= 100 and result >= 0
+
+context PHSensor::getData()
+	post: result <= 14 and result >= -3
+
+context OxygenSensor::getData()
+	post: result <= 50 and result >= 0

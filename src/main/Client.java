@@ -1,9 +1,11 @@
 package main;
+import java.util.Date;
 
 
 public class Client {
 
 	public static void main(String[] args) {
+        Date date = new Date();
 		SensorManager sensorManager = new SensorManager();
         LocationManager locationManager = new LocationManager();
         Exporter exporter = new ConsoleExporter();
@@ -27,7 +29,8 @@ public class Client {
         for(Sensor sensor: sensorManager.getSensors()) {
             bufferManager.writeToBuffer(sensor, locationManager.getLocation(sensor.id));
         }
-        exporter.export(bufferManager.getAllEntries());
+        exporter.export(bufferManager.getDataByTime(0, date.getTime() + 100));
+        // exporter.export(bufferManager.getAllEntries());
 
 	}
 
